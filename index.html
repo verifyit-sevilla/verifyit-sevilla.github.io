@@ -519,6 +519,9 @@
     <!-- Toast Notification -->
     <div id="toast" class="fixed bottom-5 right-5 z-50 hidden bg-sevilla-blue text-white px-5 py-3.5 rounded-xl shadow-lg border border-albero-300 text-sm max-w-sm"></div>
 
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
     <script>
         const defaultVerifications = [
             {
@@ -608,7 +611,54 @@
             }
         }
 
-        let userSubmissions = loadUserSubmissions();
+        
+                const firebaseConfig = {
+            apiKey: "AIzaSyDK9StvB8VUDNFE7vcPiimijvagqp2rbvI",
+            authDomain: "verifyit-sevilla.firebaseapp.com",
+            databaseURL: "https://verifyit-sevilla-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "verifyit-sevilla",
+            storageBucket: "verifyit-sevilla.firebasestorage.app",
+            messagingSenderId: "1073274066896",
+            appId: "1:1073274066896:web:11373ba7e503710ba60bd5",
+            measurementId: "G-H334Z0FPMK"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const fbAuth = firebase.auth();
+        const fbDb = firebase.database();
+        const bulosRef = fbDb.ref("bulos");
+
+        let currentUid = null;
+        let userSubmissions = [];
+
+        fbAuth.signInAnonymously()
+            .then((cred) => {
+                currentUid = cred.user.uid;
+                if (typeof renderCards === "function") renderCards();
+            })
+            .catch((err) => {
+                console.error("Error de autenticación anónima:", err);
+            });
+
+        bulosRef.on("value", (snapshot) => {
+            const raw = snapshot.val() || {};
+            userSubmissions = Object.entries(raw)
+                .map(([key, item]) => ({
+                    ...item,
+                    dbKey: key,
+                    isUserSubmitted: true, authorId: currentUid
+                }))
+                .sort((a, b) => (b.id || 0) - (a.id || 0));
+
+            if (typeof defaultVerifications !== "undefined") {
+                verifications = [...userSubmissions, ...defaultVerifications];
+                if (typeof updateStats === "function") updateStats();
+                if (typeof renderCards === "function") renderCards();
+            }
+        });
+
         let verifications = [...userSubmissions, ...defaultVerifications];
 
         const badgeStyles = {
@@ -673,7 +723,7 @@
                             <span class="px-2.5 py-1 rounded-md text-[11px] font-bold border ${badgeStyles[item.verdict] || badgeStyles["EN REVISIÓN"]}">${escapeHTML(item.verdict)}</span>
                             <div class="flex items-center gap-2">
                                 <span class="text-xs text-slate-400 font-medium">${escapeHTML(item.date)}</span>
-                                ${isUserAdded ? `<button onclick="deleteUserBulo(${item.id})" title="Eliminar envío" class="text-[11px] text-rose-500 hover:text-rose-700 font-semibold px-1.5 py-0.5 rounded bg-rose-50 cursor-pointer">✕</button>` : ""}
+                                ${(isUserAdded && currentUid && item.authorId && item.authorId === currentUid) ? `<button onclick="deleteUserBulo(\x27${item.dbKey || item.id}\x27)" title="Eliminar envío" class="text-[11px] text-rose-500 hover:text-rose-700 font-semibold px-1.5 py-0.5 rounded bg-rose-50 cursor-pointer">✕</button>` : ""}
                             </div>
                         </div>
                         <div class="flex items-center justify-between gap-2 mb-1.5">
@@ -696,12 +746,47 @@
             });
         }
 
-        function deleteUserBulo(id) {
-            userSubmissions = userSubmissions.filter(item => item.id !== id);
-            saveUserSubmissions(userSubmissions);
-            verifications = [...userSubmissions, ...defaultVerifications];
-            renderCards();
-            showToast("El envío se ha eliminado correctamente.");
+                function deleteUserBulo(buloKey) {
+            const borrarConUid = (uid) => {
+                const target = userSubmissions.find(
+                    v => String(v.dbKey) === String(buloKey) || String(v.id) === String(buloKey)
+                );
+                if (!target) {
+                    if (typeof showToast === "function") showToast("No se encontró el envío.");
+                    return;
+                }
+                if (!target.authorId || target.authorId !== uid) {
+                    if (typeof showToast === "function") showToast("Solo quien envió este bulo puede eliminarlo.");
+                    return;
+                }
+                const keyToRemove = target.dbKey || String(buloKey);
+                bulosRef.child(keyToRemove).remove()
+                    .then(() => {
+                        if (typeof activeModalId !== "undefined" && activeModalId === target.id && typeof closeModal === "function") {
+                            closeModal();
+                        }
+                        if (typeof showToast === "function") showToast("El envío se ha eliminado de forma permanente.");
+                    })
+                    .catch((err) => {
+                        console.error("Error al eliminar en Firebase:", err);
+                        if (typeof showToast === "function") {
+                            showToast("No se pudo eliminar: " + (err.message || "revisa las reglas de Firebase"));
+                        }
+                    });
+            };
+
+            if (currentUid) {
+                borrarConUid(currentUid);
+            } else if (typeof fbAuth !== "undefined") {
+                fbAuth.signInAnonymously()
+                    .then((cred) => {
+                        currentUid = cred.user.uid;
+                        borrarConUid(currentUid);
+                    })
+                    .catch((err) => {
+                        console.error("Error de autenticación al borrar:", err);
+                    });
+            }
         }
 
         // Modal Logic
@@ -892,7 +977,7 @@
             const nuevoBulo = {
                 id: Date.now(),
                 ticket: randomTicket,
-                isUserSubmitted: true,
+                isUserSubmitted: true, authorId: currentUid,
                 verdict: "EN REVISIÓN",
                 district: zona,
                 date: fechaFormateada,
@@ -903,7 +988,42 @@
                 sources: [`Alerta ciudadana (${canal})`, "Equipo de Verificación Verify It Sevilla"]
             };
 
-            userSubmissions.unshift(nuevoBulo);
+                        const guardarEnFirebase = (uid) => {
+                nuevoBulo.authorId = uid;
+                nuevoBulo.isUserSubmitted = true;
+                return bulosRef.push(nuevoBulo)
+                    .then(() => {
+                        buloForm.reset();
+                        if (typeof showToast === "function") {
+                            showToast("¡Gracias! Tu caso se ha publicado en tiempo real.");
+                        }
+                        const sec = document.getElementById("verificaciones");
+                        if (sec) sec.scrollIntoView({ behavior: "smooth" });
+                    })
+                    .catch((err) => {
+                        console.error("Error al guardar en Firebase:", err);
+                        if (typeof showToast === "function") {
+                            showToast("Error al guardar en Firebase: " + (err.message || "revisa las reglas de la base de datos"));
+                        }
+                    });
+            };
+
+            if (currentUid) {
+                guardarEnFirebase(currentUid);
+            } else {
+                fbAuth.signInAnonymously()
+                    .then((cred) => {
+                        currentUid = cred.user.uid;
+                        return guardarEnFirebase(currentUid);
+                    })
+                    .catch((err) => {
+                        console.error("Error de autenticación anónima:", err);
+                        if (typeof showToast === "function") {
+                            showToast("No se pudo conectar de forma anónima con Firebase.");
+                        }
+                    });
+            }
+            return;
             saveUserSubmissions(userSubmissions);
             verifications = [...userSubmissions, ...defaultVerifications];
 
