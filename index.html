@@ -181,11 +181,11 @@
                 <div class="lg:col-span-7">
                     <span class="text-xs font-bold uppercase tracking-widest text-albero-700">Sobre el proyecto</span>
                     <h2 class="font-serif text-3xl font-bold text-sevilla-navy mt-2">¿Qué es Verify It - Sevilla?</h2>
-                    <p class="text-slate-600 text-sm sm:text-base mt-4 leading-relaxed">
-                        <strong>Verify It</strong> nace como una iniciativa local de alfabetización mediática y verificación de datos enfocada exclusivamente en Sevilla capital y su área metropolitana. Nuestro objetivo es frenar la viralización de noticias falsas sobre transporte, obras públicas, alertas meteorológicas y servicios municipales antes de que generen alarma social.
+                                        <p class="text-slate-600 text-sm sm:text-base mt-4 leading-relaxed">
+                        <strong>Verify It</strong> nace de un grupo de jóvenes estudiantes de Periodismo de la Universidad de Sevilla cansados de ver cómo los bulos y las cadenas falsas confunden a diario a los vecinos de su ciudad. Ante la rapidez con la que se viralizan rumores sobre transporte, obras públicas o servicios municipales, decidimos aplicar lo aprendido en las aulas para frenar la desinformación antes de que genere alarma social.
                     </p>
                     <p class="text-slate-600 text-sm sm:text-base mt-3 leading-relaxed">
-                        Trabajamos con total independencia editorial, sin afiliación política ni comercial, poniendo al alcance de cualquier vecino las fuentes oficiales originales para comprobar cada información.
+                        Trabajamos con total independencia editorial, sin afiliación política ni comercial, acercando los datos contrastados y las fuentes oficiales a cualquier ciudadano para que pueda comprobar por sí mismo qué hay de cierto en cada información.
                     </p>
                 </div>
                 <div class="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -440,7 +440,7 @@
                 <p class="text-slate-600 text-sm mt-2">Síguenos en nuestras redes oficiales para ver desmentidos en vídeo y envíanos cualquier bulo por mensaje directo.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
                 <!-- Tarjeta Instagram -->
                 <a href="https://www.instagram.com/verifyit.es?avpt=OWFnMmFjbTZuN24y" target="_blank" rel="noopener noreferrer" class="group p-6 rounded-2xl bg-sevilla-cream border border-albero-200/90 hover:border-sevilla-blue hover:shadow-md transition-all flex items-center gap-4">
                     <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-amber-500 via-pink-500 to-purple-600 text-white flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
@@ -468,6 +468,19 @@
                         <p class="text-xs text-slate-500 mt-0.5">Vídeos explicativos y alertas sobre bulos en Sevilla</p>
                     </div>
                 </a>
+                <!-- Tarjeta Correo Electrónico -->
+                <a href="mailto:verifyit.es@gmail.com" class="group p-6 rounded-2xl bg-sevilla-cream border border-albero-200/90 hover:border-sevilla-blue hover:shadow-md transition-all flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-sevilla-blue text-white flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <div class="text-left overflow-hidden">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-albero-700 block">Correo Electrónico</span>
+                        <h3 class="font-bold text-base text-sevilla-navy group-hover:text-sevilla-blue transition-colors truncate">verifyit.es@gmail.com</h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Consultas, colaboraciones y envío de archivos</p>
+                    </div>
+                </a>
             </div>
         </div>
     </section>
@@ -488,7 +501,7 @@
                 <div class="flex items-center justify-center md:justify-end gap-4">
                     <a href="https://www.instagram.com/verifyit.es?avpt=OWFnMmFjbTZuN24y" target="_blank" rel="noopener noreferrer" class="text-white hover:text-albero-300 font-medium underline underline-offset-2">Instagram (@verifyit.es)</a>
                     <span>·</span>
-                    <a href="https://www.tiktok.com/@verifyit.es?_r=1&_t=ZN-9BYkquRB3e2" target="_blank" rel="noopener noreferrer" class="text-white hover:text-albero-300 font-medium underline underline-offset-2">TikTok (@verifyit.es)</a>
+                    <a href="https://www.tiktok.com/@verifyit.es?_r=1&_t=ZN-9BYkquRB3e2" target="_blank" rel="noopener noreferrer" class="text-white hover:text-albero-300 font-medium underline underline-offset-2">TikTok (@verifyit.es)</a><span>·</span><button id="openPrivacyBtn" type="button" class="text-white hover:text-albero-300 font-medium underline underline-offset-2 cursor-pointer">Política de Privacidad</button><span>·</span><a href="mailto:verifyit.es@gmail.com" class="text-white hover:text-albero-300 font-medium underline underline-offset-2">verifyit.es@gmail.com</a>
                 </div>
                 <p class="text-albero-300">© 2026 Verify It Sevilla · Comprometidos con la verdad cívica.</p>
             </div>
@@ -932,6 +945,51 @@
 
         // Initial render
         renderCards();
+    </script>
+
+    <!-- Privacy Policy Modal -->
+    <div id="privacyModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-sevilla-navy/70 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto shadow-2xl border border-albero-200 p-6 sm:p-8 relative text-left">
+            <button id="closePrivacyBtn" type="button" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-albero-50 hover:bg-albero-100 flex items-center justify-center text-sevilla-navy font-bold cursor-pointer" aria-label="Cerrar política de privacidad">✕</button>
+            <span class="text-[11px] font-bold uppercase tracking-widest text-albero-700 block mb-1">Información Legal · RGPD / LOPDGDD</span>
+            <h3 class="font-serif text-2xl font-bold text-sevilla-navy mb-4">Política de Privacidad — Verify It Sevilla</h3>
+            <div class="space-y-4 text-xs sm:text-sm text-slate-600 leading-relaxed">
+                <p><strong>1. Responsable del tratamiento:</strong> Verify It Sevilla. Contacto: <a href="mailto:verifyit.es@gmail.com" class="text-sevilla-blue underline">verifyit.es@gmail.com</a>. Domicilio: Flor de Adelfa Nº3, Sevilla.</p>
+                <p><strong>2. Finalidad y legitimación:</strong> Gestionar las consultas, sugerencias y reportes de cadenas o rumores locales enviados a través del formulario o canales de contacto, así como mantener la operativa informativa del proyecto con base en el consentimiento del usuario y el interés legítimo en la información veraz de interés local.</p>
+                <p><strong>3. Almacenamiento local y conservación:</strong> Los avisos enviados mediante el formulario se gestionan de forma anónima por defecto y pueden almacenarse localmente en el navegador del usuario (<em>localStorage</em>) para su seguimiento en la interfaz. Los correos recibidos se conservan únicamente durante el tiempo necesario para atender la consulta o verificación.</p>
+                <p><strong>4. Destinatarios y transferencias:</strong> No se ceden datos personales a terceros con fines comerciales fuera de las obligaciones legales o las infraestructuras técnicas necesarias para el funcionamiento del sitio web y las redes sociales oficiales (Instagram y TikTok <code>@verifyit.es</code>).</p>
+                <p><strong>5. Derechos de las personas usuarias:</strong> Puedes ejercer tus derechos de acceso, rectificación, supresión, limitación, oposición y portabilidad escribiendo a <a href="mailto:verifyit.es@gmail.com" class="text-sevilla-blue underline">verifyit.es@gmail.com</a>, así como reclamar ante la Agencia Española de Protección de Datos (AEPD).</p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-albero-200 flex justify-end">
+                <button id="acceptPrivacyBtn" type="button" class="px-5 py-2.5 rounded-xl bg-sevilla-blue hover:bg-sevilla-navy text-white text-xs font-bold transition cursor-pointer">
+                    Entendido
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const privacyModal = document.getElementById("privacyModal");
+            const openPrivacyBtn = document.getElementById("openPrivacyBtn");
+            const closePrivacyBtn = document.getElementById("closePrivacyBtn");
+            const acceptPrivacyBtn = document.getElementById("acceptPrivacyBtn");
+
+            function togglePrivacyModal(show) {
+                if (!privacyModal) return;
+                privacyModal.classList.toggle("hidden", !show);
+                privacyModal.classList.toggle("flex", show);
+            }
+
+            if (openPrivacyBtn) openPrivacyBtn.addEventListener("click", () => togglePrivacyModal(true));
+            if (closePrivacyBtn) closePrivacyBtn.addEventListener("click", () => togglePrivacyModal(false));
+            if (acceptPrivacyBtn) acceptPrivacyBtn.addEventListener("click", () => togglePrivacyModal(false));
+            if (privacyModal) {
+                privacyModal.addEventListener("click", (e) => {
+                    if (e.target === privacyModal) togglePrivacyModal(false);
+                });
+            }
+        })();
     </script>
 </body>
 </html>
